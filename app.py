@@ -41,8 +41,8 @@ def predict_colleges():
     institute_preference = data.get('institute_preference')
     quota = data.get('quota', 'AI')
 
-    if jee_rank is None or seat_type is None or domicile is None or quota is None:
-        return jsonify({'error': 'Missing required parameters (jee_rank, seat_type, domicile, quota)'}), 400
+    if jee_rank is None or seat_type is None or quota is None:
+        return jsonify({'error': 'Missing required parameters (jee_rank, seat_type, quota)'}), 400
 
     filtered_df = predicted_df[predicted_df['Quota'] == quota]
     filtered_df = filtered_df[filtered_df['Seat Type'] == seat_type]
