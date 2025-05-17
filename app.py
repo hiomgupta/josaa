@@ -4,24 +4,29 @@ import os
 
 app = Flask(__name__)
 
-# Load your predicted dataset
-CSV_FILE = 'predicted_dataset_with_2024.csv'
-predicted_df = pd.DataFrame()
+predicted_df = None  # Initialize as None
 
-if os.path.exists(CSV_FILE):
-    try:
-        predicted_df = pd.read_csv(CSV_FILE)
-        print(f"Successfully loaded: {CSV_FILE}")
-    except FileNotFoundError:
-        print(f"Error: {CSV_FILE} not found!")
-    except Exception as e:
-        print(f"Error loading {CSV_FILE}: {e}")
-else:
-    print(f"Warning: {CSV_FILE} does not exist in the current directory.")
+def load_predicted_data():
+    global predicted_df
+    CSV_FILE = 'predicted_dataset_with_2024.csv'
+    if predicted_df is None:
+        if os.path.exists(CSV_FILE):
+            try:
+                predicted_df = pd.read_csv(CSV_FILE)
+                print(f"Successfully loaded: {CSV_FILE}")
+            except FileNotFoundError:
+                print(f"Error: {CSV_FILE} not found!")
+                predicted_df = pd.DataFrame()
+            except Exception as e:
+                print(f"Error loading {CSV_FILE}: {e}")
+        else:
+            print(f"Warning: {CSV_FILE} does not exist in the current directory.")
 
 @app.route('/predict', methods=['POST'])
 def predict_colleges():
-    if predicted_df.empty:
+    load_predicted_data()  # Load data when the endpoint is hit
+
+    if predicted_df is None or predicted_df.empty:
         return jsonify({'error': 'Predicted data not loaded'}), 500
 
     data = request.get_json()
